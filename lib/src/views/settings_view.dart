@@ -79,6 +79,7 @@ class _SettingsViewState extends State<SettingsView> {
                 if (index == 2) {
                   setState(() {
                     widget.controller.records.clear();
+                    widget.controller.exceptions.clear();
                     widget.controller.saveApplication();
                   });
                 }
@@ -275,7 +276,7 @@ class _SettingsViewState extends State<SettingsView> {
                                 ConstrainedBox(
                                     constraints: BoxConstraints(
                                         maxWidth: screenSize.width * 0.97,
-                                        maxHeight: screenSize.height * 0.12),
+                                        maxHeight: screenSize.height * 0.15),
                                     child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -335,6 +336,17 @@ class _SettingsViewState extends State<SettingsView> {
                                                           .controller
                                                           .observation
                                                           .observers
+                                                          .length
+                                                          .toString()),
+                                                    ]),
+                                                    TableRow(children: [
+                                                      const Text(
+                                                          'Exceptions :'),
+                                                      const Text(''),
+                                                      Text(widget
+                                                          .controller
+                                                          .observation
+                                                          .exceptions
                                                           .length
                                                           .toString()),
                                                     ])

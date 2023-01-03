@@ -1,3 +1,4 @@
+import 'package:eudoria/src/app_exception.dart';
 import 'package:eudoria/src/app_router.dart';
 import 'package:flutter/material.dart';
 
@@ -137,13 +138,22 @@ class _RecordViewState extends State<RecordView> {
   }
 
   Future<void> _getPosition() async {
-    final Location location = Location();
-    final now = await location.getLocation();
+    try {
+      final Location location = Location();
+      final now = await location.getLocation();
 
-    setState(() {
-      latitude = now.latitude;
-      longitude = now.longitude;
-    });
+      setState(() {
+        latitude = now.latitude;
+        longitude = now.longitude;
+      });
+    } catch (e) {
+      widget.controller.addException(AppException(
+        id: DateTime.now().microsecondsSinceEpoch,
+        code: 'RecordView._getPosition()',
+        text: e.toString(),
+      ));
+      widget.controller.saveApplication();
+    }
   }
 
   @override

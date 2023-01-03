@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:eudoria/src/app_exception.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -50,20 +51,15 @@ class PlatformService implements AppService {
         observation = Observation.fromJson(parsed["observation"]);
         observation.size = bytes;
       } else {
-        // observation = Observation.blank;
-        // Species unknown = Species.unknown;
-        // observation.species.update(
-        //   unknown.speciesId,
-        //   (existingValue) => unknown,
-        //   ifAbsent: () => unknown,
-        // );
         await importObservation().then((theObservation) {
           observation = theObservation;
         });
       }
     } catch (e) {
-      print(e);
-      // allow with no readings.
+      throw PlatformServiceException(
+          id: DateTime.now().microsecondsSinceEpoch,
+          code: 'PlatformService.getStoredObservation()',
+          text: e.toString());
     }
     return observation;
   }
@@ -77,8 +73,11 @@ class PlatformService implements AppService {
 
       file.writeAsString(json.encode(contents));
     } catch (e) {
-      // If encountering an error, return 0
-      return false;
+      throw PlatformServiceException(
+        id: DateTime.now().microsecondsSinceEpoch,
+        code: 'PlatformService.storeObservation()',
+        text: e.toString(),
+      );
     }
     return true;
   }
@@ -95,8 +94,11 @@ class PlatformService implements AppService {
       observation = Observation.fromJson(parsed["observation"]);
       observation.size = bytes;
     } catch (e) {
-      print(e);
-      // allow with no readings.
+      throw PlatformServiceException(
+        id: DateTime.now().microsecondsSinceEpoch,
+        code: 'PlatformService.importObservation()',
+        text: e.toString(),
+      );
     }
 
     return observation;
@@ -108,7 +110,11 @@ class PlatformService implements AppService {
       SchemeService service = SchemeService();
       service.exportObservation(observation);
     } catch (e) {
-      ErrorSummary('Error in emailing: {$e}');
+      throw PlatformServiceException(
+        id: DateTime.now().microsecondsSinceEpoch,
+        code: 'PlatformService.exportObservation()',
+        text: e.toString(),
+      );
     }
   }
 }

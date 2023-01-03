@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:eudoria/src/widgets/observation_alert_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:eudoria/src/app_controller.dart';
@@ -75,22 +75,7 @@ class _MapMCWetlandState extends State<MapMCWetlandWidget> {
     showDialog<void>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          content: Image.network(r.imageURL,
-              loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) {
-              return child;
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          }),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CLOSE'),
-            ),
-          ],
-        );
+        return ObservationAlert(record: r, appController: widget.appController);
       },
     );
   }
@@ -130,7 +115,10 @@ class _MapMCWetlandState extends State<MapMCWetlandWidget> {
                       verticalOffset: 20,
                       child: IconButton(
                           // iconSize: 20,
-                          color: Colors.red.withOpacity(0.7),
+                          color: widget.appController
+                              .getSpeciesByID(observation.value.speciesID)!
+                              .getColor()
+                              .withOpacity(1),
                           onPressed: () {
                             _showAction(context, observation.value);
                           },

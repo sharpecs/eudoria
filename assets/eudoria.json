@@ -246,7 +246,7 @@
           "n": "Pycnoporus coccineus",
           "v": "Scarlet Bracket",
           "g": "Pycnoporus",
-          "o": "Orange fan shaped attaching along wood edge and fades with age",
+          "o": "Orange fan shaped attaching along wood edge and fades with age.",
           "c": "AGARICOMYCETE",
           "k": "FUNGI",
           "d": false
@@ -257,7 +257,7 @@
       "observers": [
         {
           "i": 1668332891601099,
-          "n": "S.Sharpe",
+          "n": "ShayneS",
           "e": "shaynejmsharpe@gmail.com"
         }
       ]
@@ -350,9 +350,18 @@
           "o": 1668332891601099,
           "i": "https://i.postimg.cc/dQxYZLYQ/1671492926089637.png",
           "l": "MC_WETLAND",
-          "c": []
+          "c": ["dry","summer"]
         }
       ]
+    },
+    {
+      "exceptions": [
+        {
+          "i": 0,
+          "c": "",
+          "t": ""
+        }
+      ]      
     },
     {
       "locations": [

@@ -1,6 +1,6 @@
 # Eudoria
 
-Eudoria is an application used to record, analyse and share observations taken on field trips.
+An app used to record, analyse and share observation experiences.
 
 ## About
 
