@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eudoria/src/app_exception.dart';
 import 'package:eudoria/src/app_security.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,11 @@ class SchemeService implements AppService {
         throw 'Could not launch $url';
       }
     } catch (e) {
-      ErrorSummary('Error in updateHistoryReading: {$e}');
+      throw SchemeServiceException(
+        id: DateTime.now().microsecondsSinceEpoch,
+        code: 'PlatformService.exportObservation()',
+        text: e.toString(),
+      );
     }
   }
 

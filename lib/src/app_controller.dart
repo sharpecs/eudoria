@@ -1,4 +1,9 @@
+import 'package:eudoria/src/app_exception.dart';
+import 'package:eudoria/src/app_router.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 
 export 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -123,8 +128,22 @@ class AppController with AppProvider, ChangeNotifier {
       }
       routerIndex = appUser.permissions.credentials.first;
     } catch (e) {
-      throw ErrorDescription("Error loading");
+      e as AppException;
+      throw ErrorDescription('${e.code} -> ${e.text}');
     }
+
+    // Setup recoverable error handling for flutter builds.
+    exceptions.remove(0);
+    FlutterError.onError = (details) {
+      // FlutterError.presentError(details);
+      AppException e = AppException(
+          id: DateTime.now().microsecondsSinceEpoch,
+          code: InitIndex(routerIndex).routePath.toString(),
+          text: details.exceptionAsString());
+      addException(e);
+      saveApplication();
+      if (kReleaseMode) exit(1);
+    };
 
     return success;
   }
@@ -139,7 +158,8 @@ class AppController with AppProvider, ChangeNotifier {
         await _appService.storeObservation(observation).then((success) {});
       }
     } catch (e) {
-      throw ErrorDescription("Error loading");
+      e as AppException;
+      throw ErrorDescription('${e.code} -> ${e.text}');
     }
 
     return success;
@@ -156,7 +176,8 @@ class AppController with AppProvider, ChangeNotifier {
       // 2. use Provider to clear state in memory.
 
     } catch (e) {
-      success = false;
+      e as AppException;
+      throw ErrorDescription('${e.code} -> ${e.text}');
     }
 
     return success;
@@ -170,7 +191,8 @@ class AppController with AppProvider, ChangeNotifier {
         await _appService.exportObservation(observation).then((success) {});
       }
     } catch (e) {
-      throw ErrorDescription("Error loading");
+      e as AppException;
+      throw ErrorDescription('${e.code} -> ${e.text}');
     }
 
     return success;
