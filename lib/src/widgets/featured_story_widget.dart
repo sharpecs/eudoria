@@ -189,7 +189,7 @@ class FeaturedStory extends StatelessWidget {
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
-                opacity: 0.1,
+                opacity: 1,
                 fit: BoxFit.cover,
                 image: AssetImage("assets/images/reeds.png"))),
         padding: const EdgeInsets.all(30),

@@ -210,7 +210,7 @@ class _AppTopBarWidgetState extends State<AppTopBarWidget> {
                         ],
                       ),
                     ),
-                    if (widget.controller.accessManager.authToRecord) ...[
+                    if (widget.controller.accessManager.authToSave) ...[
                       SizedBox(width: screenSize.width / 20),
                       InkWell(
                         onHover: (value) {

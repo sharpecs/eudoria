@@ -1,7 +1,10 @@
+import 'package:eudoria/src/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:eudoria/src/app_security.dart';
+
+const String MCW = 'MC_WETLAND';
 
 /// A class used to expose this application model domain and provide a simple
 /// state management with usage of a controller.
@@ -12,6 +15,7 @@ mixin AppProvider {
   late Observation? _observation;
   late Record? _record;
 
+  Map<int, AppException> get exceptions => _observation!.exceptions;
   Map<int, Species> get species => _observation!.species;
   Map<int, Record> get records => _observation!.records;
   Map<int, Observer> get observers => _observation!.observers;
@@ -117,6 +121,14 @@ mixin AppProvider {
       ifAbsent: () => aSpecies,
     );
   }
+
+  void addException(AppException anException) {
+    _observation!.exceptions.update(
+      anException.id,
+      (existingValue) => anException,
+      ifAbsent: () => anException,
+    );
+  }
 }
 
 class Observation {
@@ -126,21 +138,25 @@ class Observation {
   SecureAppUser appUser;
   List<String> locations = [];
   double size = 0;
+  Map<int, AppException> exceptions;
 
   // A default species when none is available.
   static final Observation blank = Observation(
       species: {},
       records: {},
       observers: {},
+      exceptions: {},
       appUser: SecureAppUser(id: 0, name: '', email: ''),
       locations: []);
 
-  Observation(
-      {required this.species,
-      required this.records,
-      required this.observers,
-      required this.appUser,
-      required this.locations});
+  Observation({
+    required this.species,
+    required this.records,
+    required this.observers,
+    required this.appUser,
+    required this.locations,
+    required this.exceptions,
+  });
 
   /// A factory that takes in a map (JSON) and returns the correct data object.
   factory Observation.fromJson(List list) {
@@ -197,6 +213,24 @@ class Observation {
       }
     }
 
+    //Observation Records Map.
+    Map<int, AppException> nExceptions = {};
+    for (Map e in list) {
+      if (e.keys.contains('exceptions')) {
+        List<AppException> lExceptions = e['exceptions']
+            .map<AppException>((json) => AppException.fromJson(json))
+            .toList();
+
+        for (var r in lExceptions) {
+          nExceptions.update(
+            r.id,
+            (value) => r,
+            ifAbsent: () => r,
+          );
+        }
+      }
+    }
+
     // Observation Locations List.
     List<String> nLocations = [];
     for (Map element in list) {
@@ -210,6 +244,7 @@ class Observation {
         species: nSpecies,
         records: nRecords,
         observers: nObservers,
+        exceptions: nExceptions,
         appUser: registered[0],
         locations: nLocations);
   }
@@ -221,6 +256,10 @@ class Observation {
             "registered": [appUser.toJson()]
           },
           {"species": species.entries.map<Species>((s) => s.value).toList()},
+          {
+            "exceptions":
+                exceptions.entries.map<AppException>((e) => e.value).toList()
+          },
           {
             "observers":
                 observers.entries.map<Observer>((o) => o.value).toList()
@@ -369,9 +408,44 @@ class Species {
     return CircleAvatar(
         radius: 19,
         backgroundColor: Colors.white,
+        foregroundColor: getColor(),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [Icon(ico)]));
+  }
+
+  Color getColor() {
+    Color color = Colors.grey.shade600;
+
+    switch (kingdomId) {
+      case kingdomPlant:
+        {
+          color = Colors.green.shade900;
+        }
+        break;
+      case kingdomAnimal:
+        {
+          color = Colors.brown.shade600;
+        }
+        break;
+      case kingdomFungi:
+        {
+          color = Colors.orange;
+        }
+        break;
+      case kingdomBacteria:
+        {
+          color = Colors.blue;
+        }
+        break;
+      case kingdomAlgae:
+        {
+          color = Colors.purple;
+        }
+        break;
+    }
+
+    return color;
   }
 }
 
@@ -520,5 +594,22 @@ class Record {
     double y = ((-1 * latitude! - 32.08) * 1000000 * 0.153 + 270) / 1000;
 
     return Offset(x, y);
+  }
+
+  bool atMCWetland() {
+    return locality == MCW ? true : false;
+  }
+
+  // Conditional tags as a single string display.
+  String getTagsDisplay() {
+    String tags = '';
+
+    if (conditionalTags.isNotEmpty) {
+      for (var tag in conditionalTags) {
+        tags += '#$tag ';
+      }
+    }
+
+    return tags;
   }
 }
